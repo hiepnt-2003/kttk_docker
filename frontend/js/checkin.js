@@ -9,8 +9,46 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Format ngày tháng
     const formatDate = (dateString) => {
+        if (!dateString) return '';
+        
+        // Kiểm tra nếu là timestamp từ MySQL
+        const timestamp = Date.parse(dateString);
+        
+        if (!isNaN(timestamp)) {
+            const date = new Date(timestamp);
+            
+            // Định dạng theo ngày/tháng/năm
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            
+            return `${day}/${month}/${year}`;
+        }
+        
+        // Nếu không parse được, trả về nguyên gốc
+        return dateString;
+    };
+    // Format ngày đặt phòng (ngày và giờ)
+    const formatDateBooking = (dateString) => {
+        if (!dateString) return 'Chưa xác định';
+        
         const date = new Date(dateString);
-        return date.toLocaleDateString('vi-VN');
+        
+        // Kiểm tra nếu ngày không hợp lệ
+        if (isNaN(date.getTime())) return 'Ngày không hợp lệ';
+        
+        // Các options để định dạng ngày giờ
+        const options = {
+            day: '2-digit',      // Ngày 2 chữ số
+            month: '2-digit',    // Tháng 2 chữ số
+            year: 'numeric',     // Năm đầy đủ
+            hour: '2-digit',     // Giờ 2 chữ số
+            minute: '2-digit',   // Phút 2 chữ số
+            hour12: false        // Sử dụng định dạng 24h
+        };
+        
+        // Định dạng theo locale Việt Nam
+        return date.toLocaleString('vi-VN', options).replace(',', ' ');
     };
     
     // Tìm kiếm khách hàng theo CMND/CCCD hoặc SĐT
@@ -195,6 +233,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         bookings.forEach(booking => {
+            // Sử dụng checkInDate làm ngày đặt
+            const bookingDate = booking.checkInDate;
+            
             const row = document.createElement('tr');
             
             const statusClass = 
@@ -207,16 +248,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 booking.status === 'CHECKED_IN' ? 'Đã nhận phòng' : 
                 'Đã hủy';
             
-            // Format dates
-            const bookingDate = booking.bookingDate ? formatDate(booking.bookingDate) : '';
-            const checkInDate = booking.checkInDate ? formatDate(booking.checkInDate) : '';
+            // Format ngày nhận phòng
+            const formattedBookingDate = bookingDate ? formatDate(bookingDate) : 'Chưa xác định';
             
             row.innerHTML = `
                 <td>${booking.id}</td>
                 <td>${booking.customerName || ''}</td>
                 <td>${booking.roomNumber || ''}</td>
-                <td>${bookingDate}</td>
-                <td>${checkInDate}</td>
+                <td>${formattedBookingDate}</td>
+                <td>${formattedBookingDate}</td>
                 <td><span class="badge ${statusClass}">${statusText}</span></td>
                 <td>
                     ${booking.status === 'PENDING' ? 
@@ -369,78 +409,100 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Xử lý nhận phòng mới
     document.getElementById('submitCheckIn').addEventListener('click', async () => {
-        // Lấy thông tin khách hàng
-        const fullName = document.getElementById('fullName').value.trim();
-        const identificationNumber = document.getElementById('identificationNumber').value.trim();
-        const phoneNumber = document.getElementById('phoneNumber').value.trim();
-        const email = document.getElementById('email').value.trim();
-        
-        // Lấy thông tin phòng
-        const roomId = document.getElementById('availableRooms').value;
-        const checkInDate = document.getElementById('checkInDate').value;
-        
-        // Kiểm tra dữ liệu đầu vào
-        if (!fullName || !identificationNumber || !phoneNumber || !roomId || !checkInDate) {
-            alert('Vui lòng điền đầy đủ thông tin bắt buộc');
-            return;
-        }
-        
-        // Tạo hoặc lấy khách hàng
-        let customerId;
-        
-        // Kiểm tra xem khách hàng đã tồn tại hay chưa
         try {
-            const customers = await API.searchCustomers(identificationNumber);
+            // Lấy thông tin khách hàng
+            const fullName = document.getElementById('fullName').value.trim();
+            const identificationNumber = document.getElementById('identificationNumber').value.trim();
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            const email = document.getElementById('email').value.trim();
             
-            if (customers && customers.length > 0) {
-                // Khách hàng đã tồn tại
-                customerId = customers[0].id;
-            } else {
-                // Tạo khách hàng mới
-                const customerData = {
-                    fullName,
-                    identificationNumber,
-                    phoneNumber,
-                    email
-                };
+            // Lấy thông tin phòng
+            const roomId = document.getElementById('availableRooms').value;
+            const checkInDate = document.getElementById('checkInDate').value;
+            
+            // Kiểm tra dữ liệu đầu vào
+            if (!fullName || !identificationNumber || !phoneNumber || !roomId || !checkInDate) {
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc');
+                return;
+            }
+            
+            // Tạo hoặc lấy khách hàng
+            let customerId;
+            
+            console.log('Kiểm tra thông tin khách hàng:', identificationNumber);
+            
+            // Kiểm tra xem khách hàng đã tồn tại hay chưa
+            try {
+                const customers = await API.searchCustomers(identificationNumber);
                 
-                const newCustomer = await createCustomer(customerData);
-                if (!newCustomer) return;
+                if (customers && customers.length > 0) {
+                    // Khách hàng đã tồn tại
+                    customerId = customers[0].id;
+                    console.log('Khách hàng đã tồn tại:', customerId);
+                } else {
+                    // Tạo khách hàng mới
+                    console.log('Tạo khách hàng mới');
+                    const customerData = {
+                        fullName,
+                        identificationNumber,
+                        phoneNumber,
+                        email
+                    };
+                    
+                    const newCustomer = await createCustomer(customerData);
+                    if (!newCustomer) {
+                        console.error('Không thể tạo khách hàng mới');
+                        return;
+                    }
+                    
+                    customerId = newCustomer.id;
+                    console.log('Đã tạo khách hàng mới:', customerId);
+                }
+            } catch (error) {
+                console.error('Error checking customer:', error);
+                alert('Lỗi khi kiểm tra thông tin khách hàng. Vui lòng thử lại sau.');
+                return;
+            }
+            
+            // Kiểm tra dữ liệu trước khi gửi
+            if (!customerId || !roomId) {
+                console.error('Thiếu thông tin cần thiết:', { customerId, roomId });
+                alert('Thiếu thông tin cần thiết để nhận phòng. Vui lòng kiểm tra lại.');
+                return;
+            }
+            
+            // Tạo check-in mới
+            const checkInData = {
+                customerId: customerId,
+                roomId: parseInt(roomId),
+                checkInDate: checkInDate
+            };
+            
+            console.log('Dữ liệu check-in:', checkInData);
+            
+            const newCheckIn = await createCheckIn(checkInData);
+            
+            if (newCheckIn) {
+                alert('Nhận phòng thành công!');
                 
-                customerId = newCustomer.id;
+                // Reset form
+                document.getElementById('customerSearch').value = '';
+                document.getElementById('fullName').value = '';
+                document.getElementById('identificationNumber').value = '';
+                document.getElementById('phoneNumber').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('availableRooms').value = '';
+                document.getElementById('roomNumber').value = '';
+                document.getElementById('roomType').value = '';
+                document.getElementById('monthlyPrice').value = '';
+                document.getElementById('checkInDate').value = '';
+                
+                // Reload danh sách phòng trống
+                loadAvailableRooms(document.getElementById('availableRooms'));
             }
         } catch (error) {
-            console.error('Error checking customer:', error);
-            alert('Lỗi khi kiểm tra thông tin khách hàng. Vui lòng thử lại sau.');
-            return;
-        }
-        
-        // Tạo check-in mới
-        const checkInData = {
-            customerId,
-            roomId,
-            checkInDate
-        };
-        
-        const newCheckIn = await createCheckIn(checkInData);
-        
-        if (newCheckIn) {
-            alert('Nhận phòng thành công!');
-            
-            // Reset form
-            document.getElementById('customerSearch').value = '';
-            document.getElementById('fullName').value = '';
-            document.getElementById('identificationNumber').value = '';
-            document.getElementById('phoneNumber').value = '';
-            document.getElementById('email').value = '';
-            document.getElementById('availableRooms').value = '';
-            document.getElementById('roomNumber').value = '';
-            document.getElementById('roomType').value = '';
-            document.getElementById('monthlyPrice').value = '';
-            document.getElementById('checkInDate').value = '';
-            
-            // Reload danh sách phòng trống
-            loadAvailableRooms(document.getElementById('availableRooms'));
+            console.error('Lỗi khi nhận phòng:', error);
+            alert(`Lỗi khi nhận phòng: ${error.message || 'Vui lòng thử lại sau'}`);
         }
     });
     

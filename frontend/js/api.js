@@ -85,15 +85,18 @@ const API = {
     
     // Cập nhật trạng thái phòng trong api.js
     updateRoomStatus: async (id, status) => {
-        const response = await fetch(`${API_BASE_URL}/api/rooms/${id}/status`, {
-            method: 'PATCH',  // Đã thay đổi từ PUT thành PATCH
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(status)  // Gửi chuỗi trực tiếp, không bọc trong object
-        });
-        if (!response.ok) throw new Error('Lỗi khi cập nhật trạng thái phòng');
-        return await response.json();
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/rooms/${id}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(status)
+            });
+            // Xử lý phản hồi...
+        } catch (error) {
+            // Xử lý lỗi...
+        }
     },
     
     // Lấy tất cả loại phòng

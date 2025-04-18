@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,49 +64,66 @@ public class CheckInService {
     }
 
     public CheckInDto createCheckIn(CheckInDto checkInDto) {
-        // Kiểm tra khách hàng
+        // Kiểm tra khách hàng và phòng
         CustomerDto customer = customerClient.getCustomerById(checkInDto.getCustomerId()).getBody();
-        if (customer == null) {
-            throw new ResourceNotFoundException("Không tìm thấy khách hàng với ID: " + checkInDto.getCustomerId());
-        }
-
-        // Kiểm tra phòng
         RoomDto room = roomClient.getRoomById(checkInDto.getRoomId()).getBody();
-        if (room == null) {
-            throw new ResourceNotFoundException("Không tìm thấy phòng với ID: " + checkInDto.getRoomId());
+
+        if (customer == null || room == null) {
+            throw new ResourceNotFoundException("Không tìm thấy khách hàng hoặc phòng");
         }
 
-        // Cập nhật trạng thái phòng thành OCCUPIED
-        roomClient.updateRoomStatus(checkInDto.getRoomId(), "OCCUPIED");
+        // Tạo booking mới
+        Booking booking = new Booking();
+        booking.setCustomerId(checkInDto.getCustomerId());
+        booking.setRoomId(checkInDto.getRoomId());
+        booking.setBookingDate(LocalDateTime.now()); // Ngày đặt phòng là ngày hiện tại
+        booking.setCheckInDate(checkInDto.getCheckInDate() != null
+                ? checkInDto.getCheckInDate()
+                : LocalDate.now()); // Ngày nhận phòng
+        booking.setStatus(Booking.BookingStatus.CHECKED_IN); // Trạng thái là đã nhận phòng
+        booking.setNotes("Nhận phòng trực tiếp"); // Ghi chú
 
-        CheckIn checkIn = convertToEntity(checkInDto);
-        checkIn.setCheckInDate(LocalDate.now());
+        // Lưu booking
+        Booking savedBooking = bookingRepository.save(booking);
+
+        // Tạo check-in
+        CheckIn checkIn = new CheckIn();
+        checkIn.setBookingId(savedBooking.getId()); // Liên kết với booking vừa tạo
+        checkIn.setCustomerId(savedBooking.getCustomerId());
+        checkIn.setRoomId(savedBooking.getRoomId());
+        checkIn.setCheckInDate(savedBooking.getCheckInDate());
         checkIn.setStatus(CheckIn.CheckInStatus.ACTIVE);
 
+        // Tính toán ngày dự kiến trả phòng (ví dụ: 1 tháng sau)
+        checkIn.setExpectedCheckOutDate(savedBooking.getCheckInDate().plusMonths(1));
+
+        // Lưu check-in
         CheckIn savedCheckIn = checkInRepository.save(checkIn);
+
+        // Cập nhật trạng thái phòng
+        roomClient.updateRoomStatus(savedBooking.getRoomId(), "OCCUPIED");
+
         return convertToDto(savedCheckIn);
     }
 
     public CheckInDto createCheckInFromBooking(Long bookingId) {
+        // 1. Lấy thông tin đặt phòng
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đặt phòng với ID: " + bookingId));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đặt phòng"));
 
+        // 2. Kiểm tra trạng thái đặt phòng
         if (booking.getStatus() == Booking.BookingStatus.CHECKED_IN) {
             throw new IllegalStateException("Đặt phòng này đã được nhận phòng");
         }
 
-        if (booking.getStatus() == Booking.BookingStatus.CANCELLED) {
-            throw new IllegalStateException("Không thể nhận phòng cho đặt phòng đã hủy");
-        }
-
-        // Cập nhật trạng thái đặt phòng
+        // 3. Cập nhật trạng thái đặt phòng
         booking.setStatus(Booking.BookingStatus.CHECKED_IN);
         bookingRepository.save(booking);
 
-        // Cập nhật trạng thái phòng thành OCCUPIED
+        // 4. Cập nhật trạng thái phòng
         roomClient.updateRoomStatus(booking.getRoomId(), "OCCUPIED");
 
-        // Tạo nhận phòng mới
+        // 5. Tạo check-in mới
         CheckIn checkIn = new CheckIn();
         checkIn.setBookingId(bookingId);
         checkIn.setCustomerId(booking.getCustomerId());
@@ -113,8 +131,7 @@ public class CheckInService {
         checkIn.setCheckInDate(LocalDate.now());
         checkIn.setStatus(CheckIn.CheckInStatus.ACTIVE);
 
-        CheckIn savedCheckIn = checkInRepository.save(checkIn);
-        return convertToDto(savedCheckIn);
+        return convertToDto(checkInRepository.save(checkIn));
     }
 
     public CheckInDto updateCheckIn(Long id, CheckInDto checkInDto) {

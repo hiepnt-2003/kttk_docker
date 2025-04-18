@@ -48,7 +48,8 @@ public class RoomController {
         return ResponseEntity.ok(roomService.updateRoom(id, roomDto));
     }
 
-    @PatchMapping("/{id}/status")
+    // Thay đổi từ @PatchMapping thành @PutMapping
+    @PutMapping("/{id}/status")
     public ResponseEntity<RoomDto> updateRoomStatus(@PathVariable Long id, @RequestBody String status) {
         // Chuyển đổi chuỗi thành enum
         Room.RoomStatus roomStatus = Room.RoomStatus.valueOf(status);
