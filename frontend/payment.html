@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán hàng tháng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Hệ thống Quản lý Thuê phòng</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="checkin.html">Nhận phòng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="payment.html">Thanh toán</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Quản lý khách hàng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Quản lý phòng</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Quản lý thanh toán</h4>
+                <div>
+                    <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#newInvoiceModal">
+                        <i class="bi bi-file-earmark-plus me-1"></i> Tạo hóa đơn mới
+                    </button>
+                    <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#newPaymentModal">
+                        <i class="bi bi-cash-coin me-1"></i> Tạo thanh toán mới
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <ul class="nav nav-tabs" id="paymentTabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#invoices">Hóa đơn</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#payments">Thanh toán</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#reports">Báo cáo</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content mt-3">
+                    <!-- Tab hóa đơn -->
+                    <div class="tab-pane fade show active" id="invoices">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5>Danh sách hóa đơn</h5>
+                            <div class="d-flex">
+                                <div class="input-group me-2" style="width: 300px;">
+                                    <input type="text" class="form-control" id="invoiceSearch" placeholder="Tìm kiếm hóa đơn...">
+                                    <button class="btn btn-outline-secondary" type="button" id="searchInvoiceBtn">
+                                        <i class="bi bi-search"></i>
+                                    </button>
+                                </div>
+                                <select class="form-select" id="invoiceStatusFilter" style="width: 150px;">
+                                    <option value="all">Tất cả</option>
+                                    <option value="PENDING">Chờ thanh toán</option>
+                                    <option value="PAID">Đã thanh toán</option>
+                                    <option value="OVERDUE">Quá hạn</option>
+                                    <option value="CANCELLED">Đã hủy</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Mã hóa đơn</th>
+                                        <th>Khách hàng</th>
+                                        <th>Phòng</th>
+                                        <th>Tháng</th>
+                                        <th>Số tiền</th>
+                                        <th>Ngày tạo</th>
+                                        <th>Hạn thanh toán</th>
+                                        <th>Trạng thái</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="invoiceList">
+                                    <!-- Dữ liệu sẽ được load từ API -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <nav aria-label="Page navigation" id="invoicePagination">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Trước</a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Sau</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    
+                    <!-- Tab thanh toán -->
+                    <div class="tab-pane fade" id="payments">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5>Danh sách thanh toán</h5>
+                            <div class="d-flex">
+                                <div class="input-group me-2" style="width: 300px;">
+                                    <input type="text" class="form-control" id="paymentSearch" placeholder="Tìm kiếm thanh toán...">
+                                    <button class="btn btn-outline-secondary" type="button" id="searchPaymentBtn">
+                                        <i class="bi bi-search"></i>
+                                    </button>
+                                </div>
+                                <select class="form-select" id="paymentMethodFilter" style="width: 180px;">
+                                    <option value="all">Tất cả phương thức</option>
+                                    <option value="CASH">Tiền mặt</option>
+                                    <option value="BANK_TRANSFER">Chuyển khoản</option>
+                                    <option value="CREDIT_CARD">Thẻ tín dụng</option>
+                                    <option value="MOBILE_BANKING">Mobile Banking</option>
+                                    <option value="OTHER">Khác</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Khách hàng</th>
+                                        <th>Phòng</th>
+                                        <th>Tháng</th>
+                                        <th>Số tiền</th>
+                                        <th>Ngày thanh toán</th>
+                                        <th>Phương thức</th>
+                                        <th>Mã giao dịch</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="paymentList">
+                                    <!-- Dữ liệu sẽ được load từ API -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <nav aria-label="Page navigation" id="paymentPagination">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Trước</a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Sau</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    
+                    <!-- Tab báo cáo -->
+                    <div class="tab-pane fade" id="reports">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">Lọc báo cáo</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Từ ngày</label>
+                                                    <input type="date" class="form-control" id="startDate">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Đến ngày</label>
+                                                    <input type="date" class="form-control" id="endDate">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Loại báo cáo</label>
+                                            <select class="form-select" id="reportType">
+                                                <option value="monthly">Theo tháng</option>
+                                                <option value="quarterly">Theo quý</option>
+                                                <option value="yearly">Theo năm</option>
+                                                <option value="customer">Theo khách hàng</option>
+                                                <option value="room">Theo phòng</option>
+                                            </select>
+                                        </div>
+                                        <button type="button" class="btn btn-primary" id="generateReport">
+                                            <i class="bi bi-bar-chart-fill me-1"></i> Tạo báo cáo
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">Thống kê nhanh</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="card bg-primary text-white mb-3">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">Tổng thu tháng này</h6>
+                                                        <h3 class="card-text" id="monthly-income">65,500,000đ</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="card bg-warning text-dark mb-3">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">Hóa đơn chưa thanh toán</h6>
+                                                        <h3 class="card-text" id="unpaid-invoices">12,500,000đ</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="card bg-success text-white mb-3">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">Phòng đã thuê</h6>
+                                                        <h3 class="card-text" id="occupied-rooms-count">15/20</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="card bg-danger text-white mb-3">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">Hóa đơn quá hạn</h6>
+                                                        <h3 class="card-text" id="overdue-invoices">3</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">Kết quả báo cáo</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="reportResult">
+                                    <p class="text-center text-muted">Vui lòng chọn điều kiện và nhấn "Tạo báo cáo" để xem kết quả.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal tạo hóa đơn mới -->
+    <div class="modal fade" id="newInvoiceModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Tạo hóa đơn mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Thông tin khách hàng và phòng</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Tìm kiếm khách hàng</label>
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" id="invoiceCustomerSearch" placeholder="Nhập CMND/CCCD hoặc SĐT">
+                                    <button class="btn btn-outline-secondary" type="button" id="searchInvoiceCustomerBtn">
+                                        <i class="bi bi-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div id="invoiceCustomerInfo">
+                                <div class="mb-3">
+                                    <label class="form-label">Họ tên khách hàng</label>
+                                    <input type="text" class="form-control" id="invoiceCustomerName" disabled>
+                                    <input type="hidden" id="invoiceCustomerId">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Phòng</label>
+                                    <select class="form-select" id="invoiceRoomId">
+                                        <option value="" selected disabled>-- Chọn phòng --</option>
+                                        <!-- Danh sách phòng của khách hàng sẽ được load từ API -->
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Số phòng</label>
+                                    <input type="text" class="form-control" id="invoiceRoomNumber" disabled>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Giá thuê hàng tháng</label>
+                                    <input type="text" class="form-control" id="invoiceMonthlyPrice" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6>Thông tin hóa đơn</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Tháng hóa đơn</label>
+                                <select class="form-select" id="invoiceMonth">
+                                    <option value="04/2025">04/2025 (Tháng hiện tại)</option>
+                                    <option value="05/2025">05/2025</option>
+                                    <option value="06/2025">06/2025</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Số tiền</label>
+                                <input type="number" class="form-control" id="invoiceAmount">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Hạn thanh toán</label>
+                                <input type="date" class="form-control" id="invoiceDueDate">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Mô tả</label>
+                                <textarea class="form-control" id="invoiceDescription" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" id="submitInvoice">Tạo hóa đơn</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal thanh toán hóa đơn -->
+    <div class="modal fade" id="payInvoiceModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Thanh toán hóa đơn</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Mã hóa đơn</label>
+                        <input type="text" class="form-control" id="payInvoiceNumber" disabled>
+                        <input type="hidden" id="payInvoiceId">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Khách hàng</label>
+                        <input type="text" class="form-control" id="payCustomerName" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phòng</label>
+                        <input type="text" class="form-control" id="payRoomNumber" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Số tiền</label>
+                        <input type="text" class="form-control" id="payAmount" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phương thức thanh toán</label>
+                        <select class="form-select" id="payMethod">
+                            <option value="CASH">Tiền mặt</option>
+                            <option value="BANK_TRANSFER">Chuyển khoản</option>
+                            <option value="CREDIT_CARD">Thẻ tín dụng</option>
+                            <option value="MOBILE_BANKING">Mobile Banking</option>
+                            <option value="OTHER">Khác</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mã giao dịch (nếu có)</label>
+                        <input type="text" class="form-control" id="payTransactionId">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ghi chú</label>
+                        <textarea class="form-control" id="payNotes" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-success" id="submitPayment">Xác nhận thanh toán</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal tạo thanh toán mới -->
+    <div class="modal fade" id="newPaymentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Tạo thanh toán mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Thông tin khách hàng và phòng</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Tìm kiếm khách hàng</label>
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" id="directPaymentCustomerSearch" placeholder="Nhập CMND/CCCD hoặc SĐT">
+                                    <button class="btn btn-outline-secondary" type="button" id="searchDirectPaymentCustomerBtn">
+                                        <i class="bi bi-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div id="directPaymentCustomerInfo">
+                                <div class="mb-3">
+                                    <label class="form-label">Họ tên khách hàng</label>
+                                    <input type="text" class="form-control" id="directPaymentCustomerName" disabled>
+                                    <input type="hidden" id="directPaymentCustomerId">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Phòng</label>
+                                    <select class="form-select" id="directPaymentRoomId">
+                                        <option value="" selected disabled>-- Chọn phòng --</option>
+                                        <!-- Danh sách phòng của khách hàng sẽ được load từ API -->
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Số phòng</label>
+                                    <input type="text" class="form-control" id="directPaymentRoomNumber" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6>Thông tin thanh toán</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Hóa đơn hiện có</label>
+                                <select class="form-select" id="directPaymentInvoiceId">
+                                    <option value="" selected>-- Chọn hóa đơn (nếu có) --</option>
+                                    <!-- Danh sách hóa đơn chưa thanh toán sẽ được load từ API -->
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tháng thanh toán</label>
+                                <select class="form-select" id="directPaymentMonth">
+                                    <option value="04/2025">04/2025 (Tháng hiện tại)</option>
+                                    <option value="05/2025">05/2025</option>
+                                    <option value="06/2025">06/2025</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Số tiền</label>
+                                <input type="number" class="form-control" id="directPaymentAmount">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phương thức thanh toán</label>
+                                <select class="form-select" id="directPaymentMethod">
+                                    <option value="CASH">Tiền mặt</option>
+                                    <option value="BANK_TRANSFER">Chuyển khoản</option>
+                                    <option value="CREDIT_CARD">Thẻ tín dụng</option>
+                                    <option value="MOBILE_BANKING">Mobile Banking</option>
+                                    <option value="OTHER">Khác</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Mã giao dịch (nếu có)</label>
+                                <input type="text" class="form-control" id="directPaymentTransactionId">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Ghi chú</label>
+                                <textarea class="form-control" id="directPaymentNotes" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" id="submitDirectPayment">Tạo thanh toán</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/payment.js"></script>
+</body>
+</html>

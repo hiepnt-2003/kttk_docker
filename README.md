@@ -1,2 +1,0 @@
-# kttk_docker
- 

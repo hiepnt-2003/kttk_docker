@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Quản lý Thuê phòng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Hệ thống Quản lý Thuê phòng</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="checkin.html">Nhận phòng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="payment.html">Thanh toán</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Quản lý khách hàng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Quản lý phòng</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="jumbotron p-4 bg-light rounded">
+            <h1 class="display-4">Chào mừng đến với hệ thống quản lý thuê phòng</h1>
+            <p class="lead">Hệ thống giúp quản lý việc nhận phòng và thanh toán hàng tháng của khách hàng</p>
+            <hr class="my-4">
+            <p>Chọn chức năng bạn muốn sử dụng từ các tùy chọn bên dưới.</p>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-door-open text-primary" style="font-size: 4rem;"></i>
+                        <h5 class="card-title mt-3">Quản lý nhận phòng</h5>
+                        <p class="card-text">Quản lý việc khách hàng nhận phòng, đặt phòng và trả phòng.</p>
+                        <a href="checkin.html" class="btn btn-primary">
+                            <i class="bi bi-arrow-right-circle me-1"></i> Truy cập
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-cash-coin text-success" style="font-size: 4rem;"></i>
+                        <h5 class="card-title mt-3">Quản lý thanh toán</h5>
+                        <p class="card-text">Quản lý việc thanh toán hàng tháng từ khách hàng, hóa đơn và báo cáo.</p>
+                        <a href="payment.html" class="btn btn-success">
+                            <i class="bi bi-arrow-right-circle me-1"></i> Truy cập
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-people text-info" style="font-size: 4rem;"></i>
+                        <h5 class="card-title mt-3">Quản lý khách hàng</h5>
+                        <p class="card-text">Quản lý thông tin khách hàng, xem lịch sử thuê phòng và thanh toán.</p>
+                        <a href="#" class="btn btn-info text-white">
+                            <i class="bi bi-arrow-right-circle me-1"></i> Truy cập
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-house-door text-warning" style="font-size: 4rem;"></i>
+                        <h5 class="card-title mt-3">Quản lý phòng</h5>
+                        <p class="card-text">Quản lý thông tin phòng, trạng thái phòng và giá thuê.</p>
+                        <a href="#" class="btn btn-warning text-dark">
+                            <i class="bi bi-arrow-right-circle me-1"></i> Truy cập
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-graph-up text-danger" style="font-size: 4rem;"></i>
+                        <h5 class="card-title mt-3">Báo cáo thống kê</h5>
+                        <p class="card-text">Xem báo cáo thống kê về doanh thu, phòng trống và công nợ.</p>
+                        <a href="payment.html#reports" class="btn btn-danger">
+                            <i class="bi bi-arrow-right-circle me-1"></i> Truy cập
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-gear text-secondary" style="font-size: 4rem;"></i>
+                        <h5 class="card-title mt-3">Cài đặt hệ thống</h5>
+                        <p class="card-text">Quản lý cài đặt hệ thống, tài khoản người dùng và quyền truy cập.</p>
+                        <a href="#" class="btn btn-secondary">
+                            <i class="bi bi-arrow-right-circle me-1"></i> Truy cập
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4 mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Thống kê tổng quan</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">Tổng số khách hàng</h6>
+                                        <h3 class="mb-0" id="total-customers">25</h3>
+                                    </div>
+                                    <i class="bi bi-people text-primary" style="font-size: 2.5rem;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">Tổng số phòng</h6>
+                                        <h3 class="mb-0" id="total-rooms">20</h3>
+                                    </div>
+                                    <i class="bi bi-house-door text-success" style="font-size: 2.5rem;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">Phòng đã thuê</h6>
+                                        <h3 class="mb-0" id="occupied-rooms">15 <small class="text-muted">(75%)</small></h3>
+                                    </div>
+                                    <i class="bi bi-key text-warning" style="font-size: 2.5rem;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">Doanh thu tháng này</h6>
+                                        <h3 class="mb-0" id="monthly-revenue">65.5M</h3>
+                                    </div>
+                                    <i class="bi bi-cash-stack text-danger" style="font-size: 2.5rem;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h5>Hoạt động gần đây</h5>
+                        <div class="list-group" id="recent-activities">
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Nguyễn Văn A đã nhận phòng P101</h6>
+                                    <small>3 giờ trước</small>
+                                </div>
+                                <p class="mb-1">Khách hàng đã nhận phòng theo đặt phòng trước đó</p>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Trần Thị B đã thanh toán tiền phòng</h6>
+                                    <small>5 giờ trước</small>
+                                </div>
+                                <p class="mb-1">Thanh toán tiền phòng P203 tháng 04/2025</p>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Phạm Văn D đã đặt phòng P401</h6>
+                                    <small>1 ngày trước</small>
+                                </div>
+                                <p class="mb-1">Đặt phòng với ngày nhận phòng là 15/04/2025</p>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h5>Lịch hẹn của bạn</h5>
+                        <div class="list-group" id="appointments">
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Nhận phòng - Lê Văn E</h6>
+                                    <small>Hôm nay, 15:00</small>
+                                </div>
+                                <p class="mb-1">Phòng P302 - Đã đặt từ ngày 05/04/2025</p>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Thanh toán tiền phòng - Hồ Thị F</h6>
+                                    <small>Ngày mai, 10:00</small>
+                                </div>
+                                <p class="mb-1">Phòng P205 - Tháng 04/2025</p>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Kiểm tra cơ sở vật chất</h6>
+                                    <small>13/04/2025, 09:00</small>
+                                </div>
+                                <p class="mb-1">Kiểm tra định kỳ tất cả các phòng tầng 1</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="bg-dark text-white py-4 mt-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Hệ thống Quản lý Thuê phòng</h5>
+                    <p>Giải pháp quản lý hiệu quả cho dịch vụ cho thuê phòng, căn hộ.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Liên kết</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">Trang chủ</a></li>
+                        <li><a href="#" class="text-white">Hướng dẫn sử dụng</a></li>
+                        <li><a href="#" class="text-white">Liên hệ hỗ trợ</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Liên hệ</h5>
+                    <address>
+                        <i class="bi bi-geo-alt-fill"></i> 123 Đường ABC, Quận XYZ<br>
+                        <i class="bi bi-telephone-fill"></i> (123) 456-7890<br>
+                        <i class="bi bi-envelope-fill"></i> support@rentalmanagement.com
+                    </address>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p>&copy; 2025 Rental Management System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/checkin.js"></script>
+</body>
+</html>
