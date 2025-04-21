@@ -15,7 +15,6 @@
             <option value="$PROJECT_DIR$/eureka-server" />
             <option value="$PROJECT_DIR$/payment-service" />
             <option value="$PROJECT_DIR$/room-service" />
-            <option value="$PROJECT_DIR$/user-service" />
           </set>
         </option>
       </GradleProjectSettings>

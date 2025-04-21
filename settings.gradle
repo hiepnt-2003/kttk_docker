@@ -1,6 +1,5 @@
 rootProject.name = 'rental-management-docker'
 include 'api-gateway'
-include 'user-service'
 include 'room-service'
 include 'booking-service'
 include 'payment-service'
